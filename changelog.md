@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-10（后端一键启动脚本）
+
+- 新增 `scripts/start-backend.sh`:支持 `--build` 强制打包、`--bg` 后台运行（日志写入 `logs/scaffold-admin.log`）,默认 jar 缺失时自动打包并前台启动;启动前检查 `8080` 端口占用并提示占用进程。
+- `JWT_SECRET` 读取顺序为 shell 环境变量 → 根目录 `.env.local` → 自动生成并持久化到 `.env.local`（权限 600,`.gitignore` 已忽略不入库）,密钥跨重启保持不变,已登录 token 持续有效;`.env.local` 同时支持 `DB_*` / `REDIS_*` 本机配置,显式环境变量优先。
+- README「补充启动方式说明」补充脚本用法与密钥持久化说明。
+- 验证:语法检查通过;`--help`、`--build --bg` 完整链路（生成密钥 → 打包 → 启动成功,接口 401 符合未带 token 预期）、端口占用拦截（退出码 1）、shell 环境变量优先级及 `.env.local` gitignore 覆盖均实测通过。
+
 ## 2026-10-11（MIT 开源发布）
 
 - 以当前代码建立独立的公开版本快照，采用 MIT License；第三方依赖保留各自许可，README 单独说明 GSAP 许可。

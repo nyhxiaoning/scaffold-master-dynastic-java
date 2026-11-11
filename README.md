@@ -2,6 +2,32 @@
 
 用于后续后台管理系统开发的 Spring Boot + Vue 底座。包含认证、菜单与按钮权限、数据权限、组织管理、字典、参数、日志、工作台和代码生成骨架；新增项目在此基础上实现业务模块。
 
+
+## 补充启动方式说明:
+
+后端提供一键启动脚本 `scripts/start-backend.sh`(在项目根目录执行):
+
+```bash
+# jar 缺失时自动打包,前台启动(Ctrl-C 停止)
+scripts/start-backend.sh
+
+# 启动前强制重新打包
+scripts/start-backend.sh --build
+
+# 后台启动,日志写入 logs/scaffold-admin.log
+scripts/start-backend.sh --bg
+```
+
+脚本行为说明:
+
+- 启动前检查端口 `8080`,被占用时报错退出并提示占用进程。
+- `JWT_SECRET` 读取顺序:当前 shell 已导出的变量 → 根目录 `.env.local` → 自动生成并写入 `.env.local`。
+- 密钥持久保存在 `.env.local`(权限 `600`,`.gitignore` 已忽略、不入库),因此重启后密钥不变,已登录 token 持续有效;需要更换密钥时删除该文件即可。
+- `.env.local` 中也可按 `KEY=VALUE` 写入 `DB_*` / `REDIS_*` 等变量作为本机配置,shell 中显式导出的同名变量优先。
+
+数据库、Redis 等仍按下方「本地启动」的环境变量表配置。
+
+
 ## 开发入口
 
 - [项目地图](PROJECT_MAP.md)：按功能定位页面、接口、服务、SQL 和权限。
@@ -105,3 +131,5 @@ python3 scripts/session-regression.py
 本项目代码采用 [MIT License](LICENSE)，允许商用、修改和分发，使用时保留版权及许可证声明。
 
 第三方依赖遵循各自的许可证。GSAP 使用 [Standard "No Charge" License](https://gsap.com/community/standard-license/)，不属于本项目的 MIT 授权范围；使用与再分发时须遵守其条款并保留原有声明。
+
+
