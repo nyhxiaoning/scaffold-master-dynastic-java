@@ -4,6 +4,7 @@
 
 
 ## 补充启动方式说明:
+- 登录账号密码:admin和admin123
 
 后端提供一键启动脚本 `scripts/start-backend.sh`(在项目根目录执行):
 
@@ -20,7 +21,9 @@ scripts/start-backend.sh --bg
 
 脚本行为说明:
 
-- 启动前检查端口 `8080`,被占用时报错退出并提示占用进程。
+- 分步输出 `[n/N] 步骤名` 与 ✔/⚠/✖;每步标注是否为严格前置:运行依赖(java/lsof/nc,`--build` 另需 mvn)、JWT 密钥 ≥32 字节、MySQL TCP 可达、Redis TCP 可达且认证通过、8080 空闲、按需打包、启动结果(`--bg` 等待确认)。
+- 严格前置不满足时,报错附「处理建议」和「当前环境」实况:各变量取值及其来源(shell 环境变量 / `.env.local` / 配置文件默认值)、`8080` 占用进程、本机运行中的 mysql/redis Docker 容器。
+- Redis 认证失败时自动枚举本机 redis 容器的映射端口与 `--requirepass` 密码,给出可直接粘贴进 `.env.local` 的候选组合。
 - `JWT_SECRET` 读取顺序:当前 shell 已导出的变量 → 根目录 `.env.local` → 自动生成并写入 `.env.local`。
 - 密钥持久保存在 `.env.local`(权限 `600`,`.gitignore` 已忽略、不入库),因此重启后密钥不变,已登录 token 持续有效;需要更换密钥时删除该文件即可。
 - `.env.local` 中也可按 `KEY=VALUE` 写入 `DB_*` / `REDIS_*` 等变量作为本机配置,shell 中显式导出的同名变量优先。

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-12(启动脚本分步输出与环境自诊断)
+
+- `scripts/start-backend.sh` 重构为分步输出:`[n/N] 步骤名` + ✔/⚠/✖ 逐项打印;每一步标注是否为严格前置(运行依赖、JWT ≥32 字节、MySQL TCP、Redis TCP+认证、8080 空闲、打包、启动结果)。
+- 严格前置不满足时报错附「处理建议」和「当前环境」实况:各环境变量的取值及来源(shell 环境变量 / `.env.local` / 配置文件默认值)、8080 占用进程、本机运行中的 mysql/redis Docker 容器清单。
+- `--bg` 模式启动后等待 90 秒确认结果:成功打印用时;失败输出日志末尾 40 行、疑似根因(grep Caused by / 认证失败 / BeanCreationException 等)并清理失败进程。
+- Redis 前置失败时自动枚举本机所有 redis 容器的映射端口与 `--requirepass` 真实密码,输出可直接粘贴进 `.env.local` 的候选组合,不再需要人工 `docker inspect` 排查。
+- 本机 `.env.local` 修正为实际环境:MySQL `33060`;密码 123456 且未映射到默认端口的 redis 需按候选清单配置(6379 → `123456`,63790 → `redis123`)。
+- 验证:认证失败路径给出两组端口/密码候选;正确配置后 7 步全通过,验证码接口 200,启动日志 0 个 ERROR,`RedisConnectionFailureException` 消失。
+
 ## 2026-11-10（后端一键启动脚本）
 
 - 新增 `scripts/start-backend.sh`:支持 `--build` 强制打包、`--bg` 后台运行（日志写入 `logs/scaffold-admin.log`）,默认 jar 缺失时自动打包并前台启动;启动前检查 `8080` 端口占用并提示占用进程。
